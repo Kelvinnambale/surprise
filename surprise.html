@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Do You Love Me?</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FFD5E5, #FFAACC);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background-color: rgba(255,255,255,0.9);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+        .heart-button {
+            background-color: #FF69B4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+        .heart-button:hover {
+            background-color: #FF1493;
+            transform: scale(1.1);
+        }
+        .hidden {
+            display: none !important;
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+            margin: 20px 0;
+            border: 2px solid #FF69B4;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        #heartbreak-message {
+            color: #FF1493;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .heart-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .heart {
+            position: absolute;
+            color: rgba(255,105,180,0.2);
+            font-size: 30px;
+            animation: float 10s infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="heart-background" id="heart-container"></div>
+        
+        <div id="name-step">
+            <h2>What's your name?</h2>
+            <input type="text" id="name-input" placeholder="Type your name here">
+            <button class="heart-button" onclick="startLoveConfirmation()">Begin</button>
+        </div>
+        
+        <div id="love-confirmation" class="hidden">
+            <h1 id="personalized-greeting"></h1>
+            <p>Do you love me?</p>
+            <div class="button-container">
+                <button class="heart-button" onclick="confirmLove(true)">Yes, I Love You</button>
+                <button class="heart-button" onclick="confirmLove(false)">No</button>
+            </div>
+        </div>
+        
+        <div id="step1" class="hidden">
+            <p>Are you ready for a magical surprise?</p>
+            <button class="heart-button" onclick="nextStep()">Start Here</button>
+        </div>
+        
+        <div id="step2" class="hidden">
+            <p>Do you want to see how much you mean to me?</p>
+            <button class="heart-button" onclick="nextStep()">Continue</button>
+        </div>
+        
+        <div id="step3" class="hidden">
+            <p>One last click to reveal everything...</p>
+            <button class="heart-button" onclick="revealMessage()">Reveal Surprise</button>
+        </div>
+        
+        <div id="love-message" class="hidden">
+            <h2 id="personalized-title"></h2>
+            <p>In you, I've found my soulmate, my best friend, my greatest adventure. 
+            Your smile is my sunshine, your laugh is my favorite melody. 
+            Every moment with you is a treasure I hold close to my heart.</p>
+            <p>Forever Yours ❤️</p>
+        </div>
+        
+        <div id="heartbreak-message" class="hidden">
+            <h2>💔 Heartbreak 💔</h2>
+            <p id="personalized-heartbreak"></p>
+            <button class="heart-button" onclick="goBack()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        let userName = '';
+
+        function startLoveConfirmation() {
+            userName = document.getElementById('name-input').value.trim();
+            if (userName) {
+                document.getElementById('name-step').classList.add('hidden');
+                document.getElementById('love-confirmation').classList.remove('hidden');
+                
+                // Personalize greeting
+                document.getElementById('personalized-greeting').textContent = `Hey ${userName}!`;
+            } else {
+                alert('Please enter your name');
+            }
+        }
+
+        function confirmLove(isLoved) {
+            if (isLoved) {
+                document.getElementById('love-confirmation').classList.add('hidden');
+                document.getElementById('step1').classList.remove('hidden');
+                
+                // Personalize greeting
+                document.getElementById('personalized-title').textContent = `${userName}, You're My Everything`;
+                
+                currentStep = 1;
+            } else {
+                document.getElementById('love-confirmation').classList.add('hidden');
+                const heartbreakMessage = document.getElementById('heartbreak-message');
+                const personalizedHeartbreak = document.getElementById('personalized-heartbreak');
+                
+                const heartbreakResponses = [
+                    `${userName}, my heart is shattered into a million pieces.`,
+                    `I never thought hearing 'no' could hurt this much, ${userName}.`,
+                    `Some love stories end before they even begin, ${userName}.`,
+                    `The pain of unrequited love is unbearable, ${userName}.`,
+                    `My heart breaks silently, ${userName}.`
+                ];
+                
+                personalizedHeartbreak.textContent = heartbreakResponses[Math.floor(Math.random() * heartbreakResponses.length)];
+                
+                heartbreakMessage.classList.remove('hidden');
+                createHeartbreakAnimation();
+            }
+        }
+
+        function goBack() {
+            document.getElementById('heartbreak-message').classList.add('hidden');
+            document.getElementById('name-step').classList.remove('hidden');
+            document.getElementById('name-input').value = ''; // Clear previous input
+        }
+
+        function nextStep() {
+            // Hide current step
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            
+            // Increment step
+            currentStep++;
+            
+            // Show next step
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+        }
+
+        function revealMessage() {
+            // Hide last step
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            
+            // Show love message
+            const message = document.getElementById('love-message');
+            message.classList.remove('hidden');
+            message.style.opacity = '1';
+            
+            // Create heart animation
+            createHeartAnimation();
+        }
+
+        function createHeartAnimation() {
+            const container = document.getElementById('heart-container');
+            container.innerHTML = ''; // Clear previous hearts
+            for (let i = 0; i < 50; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.classList.add('heart');
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.top = `${Math.random() * 100}%`;
+                heart.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                container.appendChild(heart);
+            }
+        }
+
+        function createHeartbreakAnimation() {
+            const container = document.getElementById('heart-container');
+            container.innerHTML = ''; // Clear previous hearts
+            for (let i = 0; i < 50; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '💔';
+                heart.classList.add('heart');
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.top = `${Math.random() * 100}%`;
+                heart.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                heart.style.opacity = '0.5';
+                container.appendChild(heart);
+            }
+        }
+    </script>
+</body>
+</html>
